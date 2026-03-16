@@ -44,3 +44,17 @@ class EmployeeResponse(BaseModel):
     job_title: str
     country: str
     salary: float
+
+
+@router.post("", response_model=EmployeeResponse, status_code=201)
+def create_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
+    db_employee = Employee(
+        full_name=employee.full_name,
+        job_title=employee.job_title,
+        country=employee.country,
+        salary=employee.salary,
+    )
+    db.add(db_employee)
+    db.commit()
+    db.refresh(db_employee)
+    return db_employee
