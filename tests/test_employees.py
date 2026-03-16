@@ -51,3 +51,18 @@ def test_get_employee_not_found(client):
     response = client.get("/employees/9999")
     assert response.status_code == 404
     assert "not found" in response.json()["detail"].lower()
+
+
+def test_list_employees(client):
+    client.post("/employees", json={"full_name": "Alice", "job_title": "Engineer", "country": "India", "salary": 50000.0})
+    client.post("/employees", json={"full_name": "Bob", "job_title": "Manager", "country": "US", "salary": 80000.0})
+    response = client.get("/employees")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+
+
+def test_list_employees_empty(client):
+    response = client.get("/employees")
+    assert response.status_code == 200
+    assert response.json() == []
