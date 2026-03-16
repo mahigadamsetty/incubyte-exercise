@@ -10,6 +10,22 @@ def test_salary_metrics_by_country(client):
     assert data["average_salary"] == 70000.0
 
 
+def test_salary_metrics_by_job_title(client):
+    client.post("/employees", json={"full_name": "A", "job_title": "Engineer", "country": "India", "salary": 60000.0})
+    client.post("/employees", json={"full_name": "B", "job_title": "Engineer", "country": "United States", "salary": 100000.0})
+    client.post("/employees", json={"full_name": "C", "job_title": "Manager", "country": "India", "salary": 80000.0})
+    response = client.get("/salary/metrics?job_title=Engineer")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["average_salary"] == 80000.0
+
+
+def test_salary_metrics_job_title_not_found(client):
+    response = client.get("/salary/metrics?job_title=Wizard")
+    assert response.status_code == 404
+    assert "no employees found" in response.json()["detail"].lower()
+
+
 def test_salary_metrics_country_not_found(client):
     response = client.get("/salary/metrics?country=Narnia")
     assert response.status_code == 404
