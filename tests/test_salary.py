@@ -1,3 +1,18 @@
+def test_salary_calculation_other_country(client):
+    employee = client.post("/employees", json={
+        "full_name": "Hans Muller",
+        "job_title": "Engineer",
+        "country": "Germany",
+        "salary": 100000.0
+    }).json()
+    response = client.get(f"/employees/{employee['id']}/salary")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["gross_salary"] == 100000.0
+    assert data["deductions"] == {}
+    assert data["net_salary"] == 100000.0
+
+
 def test_salary_calculation_united_states(client):
     employee = client.post("/employees", json={
         "full_name": "John Doe",
