@@ -59,6 +59,18 @@ def get_employee(employee_id: int, db: Session = Depends(get_db)):
     return employee
 
 
+@router.put("/{employee_id}", response_model=EmployeeResponse)
+def update_employee(employee_id: int, updates: EmployeeUpdate, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail=f"Employee with id {employee_id} not found")
+    for field, value in updates.model_dump(exclude_unset=True).items():
+        setattr(employee, field, value)
+    db.commit()
+    db.refresh(employee)
+    return employee
+
+
 @router.post("", response_model=EmployeeResponse, status_code=201)
 def create_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
     db_employee = Employee(
