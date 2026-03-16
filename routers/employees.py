@@ -46,6 +46,11 @@ class EmployeeResponse(BaseModel):
     salary: float
 
 
+@router.get("", response_model=list[EmployeeResponse])
+def list_employees(db: Session = Depends(get_db)):
+    return db.query(Employee).all()
+
+
 @router.get("/{employee_id}", response_model=EmployeeResponse)
 def get_employee(employee_id: int, db: Session = Depends(get_db)):
     employee = db.query(Employee).filter(Employee.id == employee_id).first()
