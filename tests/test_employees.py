@@ -66,3 +66,24 @@ def test_list_employees_empty(client):
     response = client.get("/employees")
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_update_employee(client):
+    created = client.post("/employees", json={
+        "full_name": "Alice Smith",
+        "job_title": "Engineer",
+        "country": "India",
+        "salary": 75000.0
+    }).json()
+    response = client.put(f"/employees/{created['id']}", json={"salary": 90000.0, "job_title": "Senior Engineer"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["salary"] == 90000.0
+    assert data["job_title"] == "Senior Engineer"
+    assert data["full_name"] == "Alice Smith"
+
+
+def test_update_employee_not_found(client):
+    response = client.put("/employees/9999", json={"salary": 90000.0})
+    assert response.status_code == 404
+    assert "not found" in response.json()["detail"].lower()
