@@ -1,0 +1,46 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from pydantic import BaseModel, ConfigDict, field_validator
+from typing import Optional
+from database import get_db
+from models import Employee
+
+router = APIRouter(prefix="/employees", tags=["employees"])
+
+
+class EmployeeCreate(BaseModel):
+    full_name: str
+    job_title: str
+    country: str
+    salary: float
+
+    @field_validator("salary")
+    @classmethod
+    def salary_must_be_positive(cls, v):
+        if v <= 0:
+            raise ValueError("salary must be a positive number")
+        return v
+
+
+class EmployeeUpdate(BaseModel):
+    full_name: Optional[str] = None
+    job_title: Optional[str] = None
+    country: Optional[str] = None
+    salary: Optional[float] = None
+
+    @field_validator("salary")
+    @classmethod
+    def salary_must_be_positive(cls, v):
+        if v is not None and v <= 0:
+            raise ValueError("salary must be a positive number")
+        return v
+
+
+class EmployeeResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    full_name: str
+    job_title: str
+    country: str
+    salary: float
