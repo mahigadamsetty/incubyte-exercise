@@ -1,3 +1,9 @@
+def test_salary_calculation_employee_not_found(client):
+    response = client.get("/employees/9999/salary")
+    assert response.status_code == 404
+    assert "not found" in response.json()["detail"].lower()
+
+
 def test_salary_calculation_other_country(client):
     employee = client.post("/employees", json={
         "full_name": "Hans Muller",
