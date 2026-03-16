@@ -87,3 +87,24 @@ def test_update_employee_not_found(client):
     response = client.put("/employees/9999", json={"salary": 90000.0})
     assert response.status_code == 404
     assert "not found" in response.json()["detail"].lower()
+
+
+def test_delete_employee(client):
+    created = client.post("/employees", json={
+        "full_name": "Alice Smith",
+        "job_title": "Engineer",
+        "country": "India",
+        "salary": 75000.0
+    }).json()
+    response = client.delete(f"/employees/{created['id']}")
+    assert response.status_code == 200
+    assert "deleted" in response.json()["message"].lower()
+    # confirm it's gone
+    get_response = client.get(f"/employees/{created['id']}")
+    assert get_response.status_code == 404
+
+
+def test_delete_employee_not_found(client):
+    response = client.delete("/employees/9999")
+    assert response.status_code == 404
+    assert "not found" in response.json()["detail"].lower()
