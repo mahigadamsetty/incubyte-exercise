@@ -18,4 +18,11 @@ def calculate_salary(employee):
 
 
 def get_metrics(employees):
-    pass
+    if not employees:
+        return None
+    salaries = [e.salary for e in employees]
+    return {
+        "min_salary": min(salaries),
+        "max_salary": max(salaries),
+        "average_salary": sum(salaries) / len(salaries),
+    }

@@ -13,7 +13,7 @@ def test_salary_metrics_by_country(client):
 def test_salary_metrics_country_not_found(client):
     response = client.get("/salary/metrics?country=Narnia")
     assert response.status_code == 404
-    assert "not found" in response.json()["detail"].lower()
+    assert "no employees found" in response.json()["detail"].lower()
 
 
 def test_salary_calculation_employee_not_found(client):
